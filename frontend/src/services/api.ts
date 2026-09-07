@@ -1,6 +1,6 @@
 import { User, Meeting } from '../types/meeting';
 
-const API_BASE = typeof window !== 'undefined' ? '/api' : (process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api');
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? '/api' : 'http://127.0.0.1:8000/api');
 
 export async function getCurrentUser(): Promise<User> {
   const res = await fetch(`${API_BASE}/users/me`, { cache: 'no-store' });
