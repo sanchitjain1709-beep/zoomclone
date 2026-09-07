@@ -8,5 +8,5 @@ if __name__ == "__main__":
     except (ValueError, TypeError):
         port = 8000
 
-    print(f"Starting Zoom Clone FastAPI Server on 0.0.0.0:{port}...")
+    print(f"Starting Zoom Clone FastAPI Server on 0.0.0.0:{port}...", flush=True)
     uvicorn.run("app.main:app", host="0.0.0.0", port=port, access_log=True)

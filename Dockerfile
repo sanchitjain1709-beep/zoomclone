@@ -9,15 +9,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy and install python dependencies
-COPY requirements.txt .
+# Copy python dependencies from backend
+COPY backend/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application source
-COPY . .
+# Copy backend source code into container
+COPY backend/ .
 
 # Expose default port
 EXPOSE 8000
 
-# Start command using python run.py entrypoint
+# Start FastAPI backend
 CMD ["python", "run.py"]
