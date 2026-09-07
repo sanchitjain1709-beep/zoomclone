@@ -13,6 +13,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY backend/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install uvicorn shim to intercept and fix unexpanded $PORT arguments from cloud start commands
+COPY uvicorn_shim.py /usr/local/bin/uvicorn
+RUN chmod +x /usr/local/bin/uvicorn
+
 # Copy backend source code into container
 COPY backend/ .
 

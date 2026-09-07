@@ -151,7 +151,7 @@ The codebase is pre-configured with `render.yaml`, `backend/Procfile`, and `back
    * **Root Directory**: `backend`
    * **Environment**: `Python 3`
    * **Build Command**: `pip install -r requirements.txt`
-   * **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+   * **Start Command**: `python run.py` (or leave default)
 4. Click **Create Web Service**.
 5. Note your deployed backend URL: `https://zoom-clone-backend-xxxx.onrender.com`.
 
