@@ -88,6 +88,20 @@ app.include_router(users_router, prefix=settings.API_V1_STR)
 # 4. Register WebSocket Signaling Router
 app.include_router(signaling_router)
 
+@app.get("/")
+async def root_check():
+    return {
+        "status": "online",
+        "service": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+        "documentation": "/docs",
+        "health": "/api/health"
+    }
+
+@app.get("/health")
+async def simple_health():
+    return {"status": "healthy"}
+
 @app.get("/api/health")
 async def health_check():
     return {

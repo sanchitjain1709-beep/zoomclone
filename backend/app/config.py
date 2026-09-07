@@ -7,8 +7,16 @@ class Settings(BaseSettings):
     VERSION: str = "2.0.0"
     API_V1_STR: str = "/api"
     
-    # SQLite Database URL with aiosqlite async driver
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./zoom_clone.db")
+    # SQLite Database URL with aiosqlite async driver (safely ignore Postgres URLs injected by cloud hosts)
+    DATABASE_URL: str = (
+        "sqlite+aiosqlite:///./zoom_clone.db"
+        if not os.getenv("DATABASE_URL") or "postgres" in os.getenv("DATABASE_URL", "").lower()
+        else (
+            os.getenv("DATABASE_URL").replace("sqlite:///", "sqlite+aiosqlite:///")
+            if os.getenv("DATABASE_URL", "").startswith("sqlite:///") and not os.getenv("DATABASE_URL", "").startswith("sqlite+aiosqlite:///")
+            else os.getenv("DATABASE_URL")
+        )
+    )
     
     # SQLite WAL mode settings
     ENABLE_WAL_MODE: bool = True
