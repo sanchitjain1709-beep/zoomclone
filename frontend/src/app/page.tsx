@@ -82,9 +82,9 @@ export default function HomePage() {
         onStartInstant={handleStartInstant}
       />
 
-      {/* 2. Main Workspace Layout */}
-      <div className="flex-1 flex max-w-7xl w-full mx-auto">
-        {/* Left Navigation Sidebar */}
+      {/* 2. Main Workspace Layout: Sidebar at Extreme Left */}
+      <div className="flex-1 flex w-full min-h-[calc(100vh-4rem)] overflow-hidden">
+        {/* Left Navigation Sidebar (Pinned to Extreme Left) */}
         <Sidebar
           activeTab={activeTab}
           onSelectTab={(t) => setActiveTab(t)}
@@ -92,7 +92,7 @@ export default function HomePage() {
         />
 
         {/* Main Canvas with Symmetrical Proportions */}
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto flex flex-col items-center">
+        <main className="flex-1 px-6 py-6 md:px-10 md:py-8 overflow-y-auto flex flex-col items-center">
           {activeTab === 'home' && (
             <div className="max-w-5xl w-full animate-in fade-in duration-150">
               {/* 4-Tile Hero Grid matching Zoom Screenshot 165109.png */}

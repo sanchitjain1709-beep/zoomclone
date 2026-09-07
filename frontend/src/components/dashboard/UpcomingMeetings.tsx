@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, Video, Copy, Check, Trash2, Key, Plus } from 'lucide-react';
+import { Video, Copy, Check, Trash2, Settings2 } from 'lucide-react';
 import { Meeting } from '@/types/meeting';
 import { deleteMeeting } from '@/services/api';
 
@@ -51,10 +51,10 @@ export default function UpcomingMeetings({
   };
 
   return (
-    <div className="min-h-[340px] bg-white rounded-2xl p-6 shadow-xs border border-gray-200/80 flex flex-col justify-between transition-all">
+    <div className="h-[310px] bg-white rounded-2xl p-6 shadow-xs hover:shadow-md border border-gray-200/80 flex flex-col justify-between transition-all select-none">
       {/* Header matching Screenshot 165109.png */}
       <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-        <h3 className="text-xl font-bold text-gray-900">Meetings</h3>
+        <h3 className="text-xl font-bold text-gray-900 tracking-tight">Meetings</h3>
         <button
           onClick={onViewAllMeetings || onOpenSchedule}
           className="text-xs font-semibold text-[#0E71EB] hover:underline transition-colors cursor-pointer"
@@ -63,30 +63,21 @@ export default function UpcomingMeetings({
         </button>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 flex flex-col justify-center py-4">
+      {/* Content Area with Exact Height Constraint */}
+      <div className="flex-1 flex flex-col justify-center py-2 overflow-hidden">
         {meetings.length === 0 ? (
-          /* Pristine Empty State with Audio & Video Test */
-          <div className="flex flex-col items-center justify-center text-center select-none py-4 space-y-4">
-            <div className="w-full max-w-xs bg-[#F7F8FA] border border-gray-100 rounded-xl py-3 px-4 text-center">
+          /* Pristine Empty State with Audio & Video Test matching Screenshot 165109.png */
+          <div className="flex flex-col items-center justify-center text-center select-none py-1 space-y-3">
+            <div className="w-full max-w-xs bg-[#F7F8FA] border border-gray-200/60 rounded-xl py-3 px-4 text-center">
               <span className="text-sm font-semibold text-gray-800">No Upcoming Meetings</span>
             </div>
 
-            <p className="text-xs text-gray-400 max-w-xs">
-              No meetings scheduled for today. You can check your camera and microphone setup before your next call.
+            <p className="text-xs text-gray-400 max-w-xs leading-relaxed">
+              No meetings scheduled. Verify your camera and mic setup below.
             </p>
-
-            {onTestAudioVideo && (
-              <button
-                onClick={onTestAudioVideo}
-                className="px-5 py-2 rounded-full bg-[#EBF2FF] hover:bg-[#D8E6FE] text-[#0B5CFF] text-xs font-semibold transition-colors cursor-pointer"
-              >
-                Test Audio and Video
-              </button>
-            )}
           </div>
         ) : (
-          <div className="divide-y divide-gray-100 overflow-y-auto max-h-[220px]">
+          <div className="divide-y divide-gray-100 overflow-y-auto max-h-[165px] pr-1">
             {meetings.map((m) => {
               const formattedDate = m.scheduled_start
                 ? new Date(m.scheduled_start).toLocaleString([], {
@@ -100,17 +91,17 @@ export default function UpcomingMeetings({
               return (
                 <div
                   key={m.id}
-                  className="py-3 flex items-center justify-between gap-3"
+                  className="py-2.5 flex items-center justify-between gap-2"
                 >
-                  <div className="space-y-0.5">
+                  <div className="min-w-0">
                     <div className="flex items-center space-x-1.5">
-                      <span className="text-[11px] font-bold text-[#0E71EB] bg-blue-50 px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] font-bold text-[#0E71EB] bg-blue-50 px-1.5 py-0.5 rounded">
                         {formattedDate}
                       </span>
-                      <span className="text-[11px] text-gray-400">({m.duration_minutes}m)</span>
+                      <span className="text-[10px] text-gray-400">({m.duration_minutes}m)</span>
                     </div>
-                    <h4 className="text-sm font-bold text-gray-900 truncate max-w-[200px]">{m.title}</h4>
-                    <p className="text-xs text-gray-500 font-mono">
+                    <h4 className="text-sm font-bold text-gray-900 truncate max-w-[190px] mt-0.5">{m.title}</h4>
+                    <p className="text-xs text-gray-400 font-mono">
                       ID: {m.meeting_code}
                     </p>
                   </div>
@@ -119,13 +110,13 @@ export default function UpcomingMeetings({
                     <button
                       onClick={() => handleCopyInvite(m)}
                       title="Copy invite"
-                      className="p-1.5 text-gray-600 hover:text-[#0E71EB] hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                      className="p-1.5 text-gray-500 hover:text-[#0E71EB] hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
                     >
                       {copiedId === m.id ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}
                     </button>
                     <button
                       onClick={() => handleStart(m)}
-                      className="flex items-center space-x-1 px-3 py-1 bg-[#0E71EB] hover:bg-[#005CE6] text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
+                      className="flex items-center space-x-1 px-3 py-1 bg-[#0E71EB] hover:bg-[#005CE6] text-white text-xs font-bold rounded-lg shadow-2xs transition-colors cursor-pointer"
                     >
                       <Video size={13} />
                       <span>Start</span>
@@ -135,7 +126,7 @@ export default function UpcomingMeetings({
                       title="Delete meeting"
                       className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={13} />
                     </button>
                   </div>
                 </div>
@@ -145,9 +136,17 @@ export default function UpcomingMeetings({
         )}
       </div>
 
-      {/* Symmetrical footer padding to align with RecentMeetings */}
-      <div className="pt-2 border-t border-gray-50 text-[11px] text-gray-400 text-center">
-        {meetings.length === 0 ? 'Ready to Host' : `${meetings.length} scheduled`}
+      {/* Symmetrical footer matching Tile 1 & 2: Diagnostic Button */}
+      <div className="pt-2 border-t border-gray-100 flex items-center justify-center">
+        {onTestAudioVideo && (
+          <button
+            onClick={onTestAudioVideo}
+            className="w-full py-1.5 px-4 rounded-xl bg-blue-50/80 hover:bg-blue-100/90 text-[#0B5CFF] text-xs font-semibold transition-all border border-blue-100/80 cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+          >
+            <Settings2 size={13} />
+            <span>Test Audio and Video</span>
+          </button>
+        )}
       </div>
     </div>
   );

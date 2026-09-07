@@ -22,7 +22,7 @@ export default function PortalHeader({
 
   return (
     <header className="w-full bg-white border-b border-gray-200 sticky top-0 z-30 shadow-2xs">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="w-full px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Left: ZoomClone Workplace Branding */}
         <Link href="/" className="flex items-center space-x-2.5 group">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#0B5CFF] to-[#3B82F6] flex items-center justify-center text-white shadow-sm shadow-blue-500/25 group-hover:scale-105 transition-transform">

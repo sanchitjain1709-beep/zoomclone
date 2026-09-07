@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calendar, Plus, Video, Copy, Check } from 'lucide-react';
+import { Calendar, Plus, Video, Copy, Check, Sparkles } from 'lucide-react';
 import { User } from '@/types/meeting';
 
 interface ActionTilesProps {
@@ -27,22 +27,33 @@ export default function ActionTiles({
   };
 
   return (
-    <div className="min-h-[200px] bg-white rounded-2xl p-6 shadow-xs border border-gray-200/80 flex flex-col justify-between transition-all select-none">
-      {/* Top: 3 Action Squircles matching Screenshot 165109.png */}
-      <div className="flex justify-around items-center pt-1">
+    <div className="h-[310px] bg-white rounded-2xl p-6 shadow-xs hover:shadow-md border border-gray-200/80 flex flex-col justify-between transition-all select-none">
+      {/* Top: Section Header */}
+      <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+          <Sparkles size={14} className="text-[#0E71EB]" />
+          Quick Actions
+        </h3>
+        <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+          HD Ready
+        </span>
+      </div>
+
+      {/* Center: 3 Action Squircles matching Screenshot 165109.png */}
+      <div className="flex justify-around items-center py-2">
         {/* 1. Schedule (Blue, Calendar 19) */}
         <button
           onClick={onOpenSchedule}
           className="flex flex-col items-center group cursor-pointer"
           title="Schedule Meeting"
         >
-          <div className="w-13 h-13 rounded-2xl bg-[#0E71EB] text-white flex items-center justify-center shadow-sm group-hover:scale-105 group-hover:bg-[#005CE6] transition-all">
+          <div className="w-15 h-15 rounded-2xl bg-[#0E71EB] text-white flex items-center justify-center shadow-sm shadow-blue-500/20 group-hover:scale-108 group-hover:bg-[#005CE6] group-hover:shadow-md transition-all">
             <div className="relative flex items-center justify-center">
-              <Calendar size={24} />
-              <span className="absolute top-[7px] text-[9px] font-bold leading-none">19</span>
+              <Calendar size={28} />
+              <span className="absolute top-[8px] text-[10px] font-bold leading-none">19</span>
             </div>
           </div>
-          <span className="text-xs font-semibold text-gray-700 mt-2 group-hover:text-[#0E71EB] transition-colors">
+          <span className="text-xs font-semibold text-gray-700 mt-2.5 group-hover:text-[#0E71EB] transition-colors">
             Schedule
           </span>
         </button>
@@ -53,10 +64,10 @@ export default function ActionTiles({
           className="flex flex-col items-center group cursor-pointer"
           title="Join Meeting"
         >
-          <div className="w-13 h-13 rounded-2xl bg-[#0E71EB] text-white flex items-center justify-center shadow-sm group-hover:scale-105 group-hover:bg-[#005CE6] transition-all">
-            <Plus size={26} />
+          <div className="w-15 h-15 rounded-2xl bg-[#0E71EB] text-white flex items-center justify-center shadow-sm shadow-blue-500/20 group-hover:scale-108 group-hover:bg-[#005CE6] group-hover:shadow-md transition-all">
+            <Plus size={30} />
           </div>
-          <span className="text-xs font-semibold text-gray-700 mt-2 group-hover:text-[#0E71EB] transition-colors">
+          <span className="text-xs font-semibold text-gray-700 mt-2.5 group-hover:text-[#0E71EB] transition-colors">
             Join
           </span>
         </button>
@@ -67,30 +78,42 @@ export default function ActionTiles({
           className="flex flex-col items-center group cursor-pointer"
           title="Host Meeting"
         >
-          <div className="w-13 h-13 rounded-2xl bg-[#FF5500] text-white flex items-center justify-center shadow-sm group-hover:scale-105 group-hover:bg-[#E04B00] transition-all">
-            <Video size={24} />
+          <div className="w-15 h-15 rounded-2xl bg-[#FF5500] text-white flex items-center justify-center shadow-sm shadow-orange-500/20 group-hover:scale-108 group-hover:bg-[#E04B00] group-hover:shadow-md transition-all">
+            <Video size={28} />
           </div>
-          <span className="text-xs font-semibold text-gray-700 mt-2 group-hover:text-[#FF5500] transition-colors">
+          <span className="text-xs font-semibold text-gray-700 mt-2.5 group-hover:text-[#FF5500] transition-colors">
             Host
           </span>
         </button>
       </div>
 
       {/* Bottom: Personal Meeting ID with Copy matching Screenshot 165109.png */}
-      <div className="pt-3 border-t border-gray-100 flex flex-col items-center justify-center text-center">
-        <span className="text-xs font-semibold text-gray-800 mb-1">
-          Personal Meeting ID
-        </span>
-        <div className="flex items-center space-x-1.5 text-sm font-mono text-gray-600">
-          <span>{pmi}</span>
-          <button
-            onClick={handleCopyPMI}
-            className="text-gray-400 hover:text-gray-700 p-1 rounded-md transition-colors cursor-pointer"
-            title="Copy PMI"
-          >
-            {copied ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}
-          </button>
+      <div className="p-3 bg-gray-50/80 hover:bg-gray-100/60 rounded-xl border border-gray-200/70 flex items-center justify-between transition-colors">
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+            Personal Meeting ID (PMI)
+          </span>
+          <span className="text-base font-bold font-mono text-gray-800 tracking-wide">
+            {pmi}
+          </span>
         </div>
+        <button
+          onClick={handleCopyPMI}
+          className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg border border-gray-300/80 bg-white hover:bg-gray-50 text-xs font-semibold text-gray-700 shadow-2xs transition-all cursor-pointer"
+          title="Copy PMI"
+        >
+          {copied ? (
+            <>
+              <Check size={13} className="text-green-600" />
+              <span className="text-green-600 text-[11px]">Copied</span>
+            </>
+          ) : (
+            <>
+              <Copy size={13} className="text-gray-500" />
+              <span className="text-[11px]">Copy</span>
+            </>
+          )}
+        </button>
       </div>
     </div>
   );
