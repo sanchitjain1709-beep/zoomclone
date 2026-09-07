@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, Copy, Check, X, Laptop, Smartphone, Info } from 'lucide-react';
+import { ShieldCheck, Copy, Check, X, Link2 } from 'lucide-react';
 
 interface MeetingInfoPopupProps {
   isOpen: boolean;
@@ -20,109 +20,98 @@ export default function MeetingInfoPopup({
   hostName,
   passcode = 'gTfEu4',
 }: MeetingInfoPopupProps) {
-  const [copiedLocal, setCopiedLocal] = useState(false);
-  const [copiedNetwork, setCopiedNetwork] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedInvite, setCopiedInvite] = useState(false);
 
   if (!isOpen) return null;
 
   const cleanCode = meetingCode.replace(/\s+/g, '');
   const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
-  const localInviteLink = `${origin}/lobby/${cleanCode}`;
-  // User's active network IP (Wi-Fi adapter)
-  const networkInviteLink = `http://10.12.124.101:3000/lobby/${cleanCode}`;
+  const inviteLink = `${origin}/lobby/${cleanCode}`;
 
-  const handleCopyLocal = () => {
-    navigator.clipboard.writeText(localInviteLink);
-    setCopiedLocal(true);
-    setTimeout(() => setCopiedLocal(false), 2000);
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(inviteLink);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
   };
 
-  const handleCopyNetwork = () => {
-    navigator.clipboard.writeText(networkInviteLink);
-    setCopiedNetwork(true);
-    setTimeout(() => setCopiedNetwork(false), 2000);
+  const handleCopyFullInvitation = () => {
+    const inviteText = `${hostName} is inviting you to a Zoom meeting.\n\nTopic: ${title}\nJoin Zoom Meeting:\n${inviteLink}\n\nMeeting ID: ${meetingCode}\nPasscode: ${passcode}`;
+    navigator.clipboard.writeText(inviteText);
+    setCopiedInvite(true);
+    setTimeout(() => setCopiedInvite(false), 2000);
   };
 
   return (
-    <div className="absolute top-14 left-6 z-50 w-96 bg-[#1F2228] border border-gray-700 rounded-2xl p-5 shadow-2xl text-white text-xs space-y-4 animate-in fade-in zoom-in-95">
+    <div className="absolute top-14 left-6 z-50 w-96 bg-[#1F2228] border border-gray-700/90 rounded-2xl p-5 shadow-2xl text-white text-xs space-y-4 animate-in fade-in zoom-in-95">
+      {/* Header */}
       <div className="flex items-center justify-between border-b border-gray-700/80 pb-3">
         <div className="flex items-center space-x-2 text-green-400 font-bold">
           <ShieldCheck size={16} />
           <span>Meeting Information</span>
         </div>
-        <button onClick={onClose} className="text-gray-400 hover:text-white cursor-pointer">
+        <button
+          onClick={onClose}
+          className="text-gray-400 hover:text-white cursor-pointer p-1 rounded-md hover:bg-white/5 transition-colors"
+        >
           <X size={16} />
         </button>
       </div>
 
-      <div className="space-y-2.5">
+      <div className="space-y-3">
+        {/* Topic */}
         <div>
-          <span className="text-gray-400 block text-[11px]">Topic</span>
+          <span className="text-gray-400 block text-[11px] font-medium">Topic</span>
           <span className="font-bold text-sm text-gray-100">{title}</span>
         </div>
 
-        <div className="flex items-center justify-between">
+        {/* Meeting ID & Passcode */}
+        <div className="flex items-center justify-between bg-black/20 p-2.5 rounded-xl border border-gray-800">
           <div>
-            <span className="text-gray-400 block text-[11px]">Meeting ID</span>
-            <span className="font-mono font-bold text-gray-200">{meetingCode}</span>
+            <span className="text-gray-400 block text-[10px] uppercase tracking-wider">Meeting ID</span>
+            <span className="font-mono font-bold text-gray-100 text-sm">{meetingCode}</span>
           </div>
-          <div>
-            <span className="text-gray-400 block text-[11px]">Passcode</span>
-            <span className="font-mono font-bold text-gray-200">{passcode}</span>
+          <div className="text-right">
+            <span className="text-gray-400 block text-[10px] uppercase tracking-wider">Passcode</span>
+            <span className="font-mono font-bold text-gray-100 text-sm">{passcode}</span>
           </div>
         </div>
 
+        {/* Host */}
         <div>
-          <span className="text-gray-400 block text-[11px]">Host</span>
+          <span className="text-gray-400 block text-[11px] font-medium">Host</span>
           <span className="font-medium text-gray-200">{hostName}</span>
         </div>
 
-        {/* 1. Local Link (For this PC: 2nd Tab / Incognito) */}
+        {/* Single Universal Invite Link */}
         <div>
-          <span className="text-gray-400 flex items-center space-x-1 text-[11px] mb-1">
-            <Laptop size={12} className="text-blue-400" />
-            <span>Link for this computer (Tab 2 / Incognito):</span>
+          <span className="text-gray-400 flex items-center space-x-1.5 text-[11px] mb-1.5 font-medium">
+            <Link2 size={13} className="text-blue-400" />
+            <span>Invite Link</span>
           </span>
-          <div className="flex items-center justify-between p-2 bg-black/40 rounded-lg border border-gray-800">
-            <span className="truncate font-mono text-[10px] text-gray-300 max-w-[220px]">
-              {localInviteLink}
+          <div className="flex items-center justify-between p-2.5 bg-black/40 rounded-xl border border-gray-800 hover:border-gray-700 transition-colors">
+            <span className="truncate font-mono text-[11px] text-gray-300 mr-2 select-all">
+              {inviteLink}
             </span>
             <button
-              onClick={handleCopyLocal}
-              className="flex items-center space-x-1 text-[#0E71EB] hover:text-blue-400 font-semibold cursor-pointer shrink-0 ml-2"
+              onClick={handleCopyLink}
+              className="flex items-center space-x-1 px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold text-[11px] transition-colors cursor-pointer shrink-0 shadow-sm"
             >
-              {copiedLocal ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
-              <span>{copiedLocal ? 'Copied' : 'Copy'}</span>
+              {copiedLink ? <Check size={12} className="text-white" /> : <Copy size={12} />}
+              <span>{copiedLink ? 'Copied' : 'Copy'}</span>
             </button>
           </div>
         </div>
 
-        {/* 2. Network Wi-Fi Link (For phone / other laptop on Wi-Fi or Hotspot) */}
-        <div>
-          <span className="text-gray-400 flex items-center space-x-1 text-[11px] mb-1">
-            <Smartphone size={12} className="text-emerald-400" />
-            <span>Link for other devices (Phone / Same Wi-Fi / Hotspot):</span>
-          </span>
-          <div className="flex items-center justify-between p-2 bg-black/40 rounded-lg border border-gray-800">
-            <span className="truncate font-mono text-[10px] text-emerald-300 max-w-[220px]">
-              {networkInviteLink}
-            </span>
-            <button
-              onClick={handleCopyNetwork}
-              className="flex items-center space-x-1 text-[#22C55E] hover:text-green-400 font-semibold cursor-pointer shrink-0 ml-2"
-            >
-              {copiedNetwork ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
-              <span>{copiedNetwork ? 'Copied' : 'Copy'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Explanatory note */}
-        <div className="p-2.5 rounded-lg bg-blue-950/40 border border-blue-800/40 text-[10px] text-blue-200 flex items-start space-x-1.5">
-          <Info size={13} className="shrink-0 text-blue-400 mt-0.5" />
-          <span>
-            <b>Why &apos;localhost&apos; won&apos;t work on other devices:</b> &apos;localhost&apos; points to that device itself. To test on a phone or another laptop, make sure it is connected to the same Wi-Fi or your mobile hotspot, then use the green <b>Network link</b> above.
-          </span>
+        {/* Copy Full Invitation Action */}
+        <div className="pt-1">
+          <button
+            onClick={handleCopyFullInvitation}
+            className="w-full py-2 px-3 bg-[#2E323B] hover:bg-[#3B404C] text-gray-200 hover:text-white rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-gray-700/60"
+          >
+            {copiedInvite ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
+            <span>{copiedInvite ? 'Invitation Copied to Clipboard!' : 'Copy Full Invitation'}</span>
+          </button>
         </div>
       </div>
     </div>
