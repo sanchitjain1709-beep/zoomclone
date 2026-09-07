@@ -79,5 +79,9 @@ export interface SignalingMessage {
     is_video_off: boolean;
     is_screen_sharing: boolean;
   }>;
+  waiting_peers?: Array<{
+    peer_id: string;
+    name: string;
+  }>;
   result?: any;
 }

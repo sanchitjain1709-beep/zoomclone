@@ -43,7 +43,15 @@ Built strictly according to the assignment requirements with **Next.js**, **Pyth
   * **Host Controls**: Host moderation shield allowing **Mute All** and **Remove Participant**.
   * **End / Leave Meeting**: Floating dialog with **End meeting for all** (host) and **Leave meeting** options.
 
-### 5. Schedule Meetings
+### 5. Waiting Room & Host Admission Controls
+* **Waiting Room Gatekeeper**: When enabled (or by default for non-hosts), participants entering via link wait in a Zoom-styled waiting room with real-time radar animation, meeting title, host name, and live hardware (camera & mic) test preview.
+* **Host Notifications & Admission Controls**:
+  * Real-time floating alert banner whenever participants join the waiting room.
+  * **Admit All** quick button to allow all waiting guests in at once.
+  * **Participants Drawer Waiting Room section**: View individual waiting guests with **Admit** and **Remove** controls.
+  * Synchronized WebSocket updates admit guests into active conferencing and generate SDP offers seamlessly.
+
+### 6. Schedule Meetings
 * Form with Topic, Description, Date picker, Time picker, Duration (`0 hr 40 min`), Passcode (`gTfEu4`), Waiting Room toggle, and Auto-generate vs Personal Meeting ID.
 * Saved instantly to SQLite and displayed in the Upcoming Meetings list.
 
@@ -114,12 +122,27 @@ npm run dev
 
 ---
 
-## 🧪 Testing Multi-Peer Video Conferencing
-1. Open `http://localhost:3000` in your main browser window.
-2. Click **Host** or **Start** on an upcoming meeting -> Enter room as Host (**Sanchit Jain**).
-3. Open a second browser window (or Incognito / second device on the same local network).
-4. Click **Join** -> Enter the Meeting ID (e.g. `842 4910 2931`) and set display name to **Guest User**.
-5. Test live audio/video streaming, mute/unmute toggles, in-meeting chat, emoji reactions, and host "Mute All" command.
+## 🧪 Testing Video Conferencing & Waiting Room
+
+### A. Global Multi-Network Access (Different WiFi / 4G / 5G / Cellular)
+> [!NOTE]
+> **No Same-Network Restriction**: When deployed to cloud (Railway + Vercel) or running with STUN/TURN NAT traversal, devices do **NOT** need to be on the same WiFi network! Participants can join from any smartphone, laptop, cellular network (4G/5G), or different city/country simply by clicking the meeting link.
+
+### B. Testing Steps (Host & Guest Workflow):
+1. **Host Starts Meeting**:
+   * Open the app in your primary browser window.
+   * Click **Host** or **Start** on an upcoming meeting -> Enter the room as Host (**Sanchit Jain**).
+2. **Guest Joins via Link (Any Device / Network)**:
+   * Open an Incognito window, second browser, or separate mobile phone/laptop on cellular or external Wi-Fi.
+   * Navigate to the meeting link or enter the 10-digit Meeting ID (e.g. `/lobby/84249102931` or `/room/84249102931?name=Guest+User`).
+   * The guest is automatically placed in the **Zoom Waiting Room** with real-time radar pulsing animation and hardware test preview.
+3. **Host Admits Guest**:
+   * On the Host's screen, an alert toast instantly appears: *"Guest User is waiting to join the meeting."*
+   * The Host can click **Admit** (or open the **Participants** drawer to view all waiting participants and click **Admit All**).
+   * The guest is immediately admitted into the active video gallery!
+4. **Test Real-Time Media & Controls**:
+   * Test two-way audio & video streaming with active speaker spotlighting.
+   * Test in-meeting chat, floating emoji reactions, screen sharing, and Host moderation (Mute All, Remove Participant).
 
 ---
 
@@ -132,8 +155,10 @@ npm run dev
 | **Core 2: Instant Meeting** | ✅ Implemented | Unique 10-digit ID, DB persistence, instant room entry. |
 | **Core 3: Join Meeting** | ✅ Implemented | Join by ID/URL, Green room lobby preview, display name, existence validation. |
 | **Core 4: Schedule Meeting** | ✅ Implemented | Date/time pickers, duration, passcode, auto-link, upcoming list sync. |
+| **Feature: Waiting Room** | ✅ Implemented | Zoom-styled waiting room, real-time radar, host floating alert, Admit/Deny/Admit All. |
+| **Global Traversal (NAT/ICE)** | ✅ Implemented | STUN + Open Relay TURN configured so users on different networks/cellular can connect. |
 | **Bonus: Responsive Design** | ✅ Implemented | Dynamic responsive grid adapting from 1 participant to multi-peer. |
-| **Bonus: Host Controls** | ✅ Implemented | Host moderation shield (Mute All, Lock Meeting, Remove Participant). |
+| **Bonus: Host Controls** | ✅ Implemented | Host moderation shield (Mute All, Lock Meeting, Remove Participant, Admit/Deny). |
 | **Bonus: Screen Sharing** | ✅ Implemented | Native WebRTC screen sharing with live track replacement. |
 | **Database Design** | ✅ Implemented | Normalized SQLite schema in WAL mode with relationships and foreign keys. |
 | **No Login Required** | ✅ Implemented | Default evaluator user pre-seeded on startup for zero-friction evaluation. |

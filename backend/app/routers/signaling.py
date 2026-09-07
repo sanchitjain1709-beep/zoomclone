@@ -30,42 +30,65 @@ async def websocket_signaling_endpoint(
     """
     await websocket.accept()
     
-    # Register peer in room and get existing participants
-    existing_peers = await room_manager.connect_peer(
-        meeting_id=meeting_id,
-        peer_id=peer_id,
-        websocket=websocket,
-        name=name,
-        role=role,
-        host_token=host_token
-    )
-
-    # Determine assigned role (first user becomes HOST)
-    assigned_role = "HOST" if room_manager.room_hosts.get(meeting_id) == peer_id else role
+    is_host = (role.upper() == "HOST")
 
     try:
-        # 1. Send confirmation to the joining peer with current room state
-        await websocket.send_text(json.dumps({
-            "type": "room-joined",
-            "peer_id": peer_id,
-            "role": assigned_role,
-            "peers": existing_peers
-        }))
-
-        # 2. Notify other peers in the room about the new participant
-        await room_manager.broadcast_to_room(
-            meeting_id,
-            {
-                "type": "user-joined",
+        if not is_host:
+            # 1. Non-host participants enter the Waiting Room until admitted
+            await room_manager.add_to_waiting_room(meeting_id, peer_id, websocket, name)
+            await websocket.send_text(json.dumps({
+                "type": "waiting-room-status",
+                "status": "WAITING",
                 "peer_id": peer_id,
                 "name": name,
-                "role": assigned_role,
-                "is_muted": True,
-                "is_video_off": True,
-                "is_screen_sharing": False
-            },
-            exclude_peer_id=peer_id
-        )
+                "message": "Please wait, the meeting host will let you in soon."
+            }))
+
+            # Notify the host in real time about the waiting participant
+            host_id = room_manager.room_hosts.get(meeting_id)
+            if host_id:
+                await room_manager.send_to_peer(
+                    meeting_id,
+                    host_id,
+                    {
+                        "type": "waiting-peer-joined",
+                        "peer_id": peer_id,
+                        "name": name
+                    }
+                )
+        else:
+            # 2. Host connects directly into the room
+            existing_peers = await room_manager.connect_peer(
+                meeting_id=meeting_id,
+                peer_id=peer_id,
+                websocket=websocket,
+                name=name,
+                role="HOST",
+                host_token=host_token
+            )
+            waiting_peers = room_manager.get_waiting_peers(meeting_id)
+
+            await websocket.send_text(json.dumps({
+                "type": "room-joined",
+                "peer_id": peer_id,
+                "role": "HOST",
+                "peers": existing_peers,
+                "waiting_peers": waiting_peers
+            }))
+
+            await room_manager.broadcast_to_room(
+                meeting_id,
+                {
+                    "type": "user-joined",
+                    "peer_id": peer_id,
+                    "name": name,
+                    "role": "HOST",
+                    "is_muted": True,
+                    "is_video_off": True,
+                    "is_screen_sharing": False
+                },
+                exclude_peer_id=peer_id
+            )
 
         # 3. Message listening loop
         while True:
@@ -166,7 +189,15 @@ async def websocket_signaling_endpoint(
                     }
                 )
 
-            # Host Moderation Action (Mute All, Kick, Lock)
+            # Host query for waiting room roster
+            elif msg_type == "get-waiting-peers":
+                waiting_peers = room_manager.get_waiting_peers(meeting_id)
+                await websocket.send_text(json.dumps({
+                    "type": "waiting-room-list",
+                    "peers": waiting_peers
+                }))
+
+            # Host Moderation Action (Mute All, Kick, Lock, Admit, Deny)
             elif msg_type == "host-action":
                 action = data.get("action")
                 target_peer_id = data.get("target_peer_id")

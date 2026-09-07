@@ -79,6 +79,20 @@ class HostService:
                 room[target_peer_id].is_muted = True
             return {"success": True, "action": "mute_user", "target": target_peer_id}
 
+        elif action in ("admit_peer", "admit-peer") and target_peer_id:
+            admitted = await room_manager.admit_peer(meeting_id, target_peer_id)
+            if admitted:
+                return {"success": True, "action": "admit_peer", "target": target_peer_id}
+            return {"success": False, "error": f"Peer {target_peer_id} not found in waiting room."}
+
+        elif action in ("deny_peer", "deny-peer") and target_peer_id:
+            denied = await room_manager.deny_peer(meeting_id, target_peer_id)
+            return {"success": denied, "action": "deny_peer", "target": target_peer_id}
+
+        elif action in ("admit_all", "admit-all"):
+            admitted_ids = await room_manager.admit_all_peers(meeting_id)
+            return {"success": True, "action": "admit_all", "admitted": admitted_ids}
+
         elif action == "lock_meeting":
             await room_manager.broadcast_to_room(
                 meeting_id,

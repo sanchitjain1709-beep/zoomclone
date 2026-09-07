@@ -39,11 +39,141 @@ class RoomManager:
     def __init__(self):
         # meeting_id -> { peer_id: PeerInfo }
         self.rooms: Dict[str, Dict[str, PeerInfo]] = {}
+        # meeting_id -> { peer_id: PeerInfo } (participants waiting for host admission)
+        self.waiting_rooms: Dict[str, Dict[str, PeerInfo]] = {}
         # meeting_id -> host_peer_id
         self.room_hosts: Dict[str, str] = {}
         # meeting_id -> host_token (secret key)
         self.room_host_tokens: Dict[str, str] = {}
+        # meeting_id -> bool (whether waiting room is active)
+        self.waiting_room_enabled: Dict[str, bool] = {}
         self._lock = asyncio.Lock()
+
+    async def add_to_waiting_room(
+        self,
+        meeting_id: str,
+        peer_id: str,
+        websocket: WebSocket,
+        name: str
+    ) -> Dict[str, Any]:
+        """Place an unadmitted guest into the meeting's waiting room."""
+        async with self._lock:
+            if meeting_id not in self.waiting_rooms:
+                self.waiting_rooms[meeting_id] = {}
+            peer = PeerInfo(peer_id, websocket, name, role="WAITING")
+            self.waiting_rooms[meeting_id][peer_id] = peer
+            logger.info(f"Peer {peer_id} ({name}) entered waiting room for {meeting_id}. Total waiting: {len(self.waiting_rooms[meeting_id])}")
+            return peer.to_dict()
+
+    def get_waiting_peers(self, meeting_id: str) -> List[Dict[str, Any]]:
+        """Return list of peers currently waiting in the waiting room."""
+        waiting = self.waiting_rooms.get(meeting_id, {})
+        return [p.to_dict() for p in waiting.values()]
+
+    async def admit_peer(self, meeting_id: str, peer_id: str) -> Optional[Dict[str, Any]]:
+        """Admit a specific peer from the waiting room into the active meeting."""
+        peer: Optional[PeerInfo] = None
+        existing_peers: List[Dict[str, Any]] = []
+
+        async with self._lock:
+            if meeting_id in self.waiting_rooms and peer_id in self.waiting_rooms[meeting_id]:
+                peer = self.waiting_rooms[meeting_id].pop(peer_id)
+                if not self.waiting_rooms[meeting_id]:
+                    del self.waiting_rooms[meeting_id]
+
+                if meeting_id not in self.rooms:
+                    self.rooms[meeting_id] = {}
+
+                peer.role = "PARTICIPANT"
+                existing_peers = [p.to_dict() for p in self.rooms[meeting_id].values()]
+                self.rooms[meeting_id][peer_id] = peer
+                logger.info(f"Peer {peer_id} ({peer.name}) ADMITTED to room {meeting_id}")
+            else:
+                return None
+
+        if peer:
+            # 1. Send admission confirmation to the newly admitted peer
+            try:
+                await peer.websocket.send_text(json.dumps({
+                    "type": "waiting-room-admitted",
+                    "peer_id": peer_id,
+                    "role": "PARTICIPANT",
+                    "peers": existing_peers
+                }))
+            except Exception as e:
+                logger.error(f"Failed to send admission confirmation to peer {peer_id}: {e}")
+
+            # 2. Broadcast user-joined to existing peers in the room
+            await self.broadcast_to_room(
+                meeting_id,
+                {
+                    "type": "user-joined",
+                    "peer_id": peer_id,
+                    "name": peer.name,
+                    "role": "PARTICIPANT",
+                    "is_muted": peer.is_muted,
+                    "is_video_off": peer.is_video_off,
+                    "is_screen_sharing": peer.is_screen_sharing
+                },
+                exclude_peer_id=peer_id
+            )
+
+            # 3. Notify host that waiting peer was admitted
+            host_id = self.room_hosts.get(meeting_id)
+            if host_id:
+                await self.send_to_peer(
+                    meeting_id,
+                    host_id,
+                    {
+                        "type": "waiting-peer-admitted",
+                        "peer_id": peer_id
+                    }
+                )
+
+            return peer.to_dict()
+        return None
+
+    async def deny_peer(self, meeting_id: str, peer_id: str) -> bool:
+        """Deny and disconnect a peer currently in the waiting room."""
+        peer: Optional[PeerInfo] = None
+        async with self._lock:
+            if meeting_id in self.waiting_rooms and peer_id in self.waiting_rooms[meeting_id]:
+                peer = self.waiting_rooms[meeting_id].pop(peer_id)
+                if not self.waiting_rooms[meeting_id]:
+                    del self.waiting_rooms[meeting_id]
+
+        if peer:
+            try:
+                await peer.websocket.send_text(json.dumps({
+                    "type": "waiting-room-denied",
+                    "message": "The meeting host has declined your request to join."
+                }))
+                await peer.websocket.close()
+            except Exception:
+                pass
+
+            host_id = self.room_hosts.get(meeting_id)
+            if host_id:
+                await self.send_to_peer(
+                    meeting_id,
+                    host_id,
+                    {
+                        "type": "waiting-peer-denied",
+                        "peer_id": peer_id
+                    }
+                )
+            return True
+        return False
+
+    async def admit_all_peers(self, meeting_id: str) -> List[str]:
+        """Admit all participants currently waiting in the waiting room."""
+        waiting_ids = list(self.waiting_rooms.get(meeting_id, {}).keys())
+        admitted = []
+        for pid in waiting_ids:
+            res = await self.admit_peer(meeting_id, pid)
+            if res:
+                admitted.append(pid)
+        return admitted
 
     async def connect_peer(
         self,
@@ -86,8 +216,21 @@ class RoomManager:
     async def disconnect_peer(self, meeting_id: str, peer_id: str) -> Optional[str]:
         """Remove peer from room and broadcast exit to remaining peers."""
         host_changed_to: Optional[str] = None
-
         async with self._lock:
+            # Also check if peer was in waiting room
+            if meeting_id in self.waiting_rooms and peer_id in self.waiting_rooms[meeting_id]:
+                del self.waiting_rooms[meeting_id][peer_id]
+                if not self.waiting_rooms[meeting_id]:
+                    del self.waiting_rooms[meeting_id]
+                host_id = self.room_hosts.get(meeting_id)
+                if host_id:
+                    asyncio.create_task(self.send_to_peer(
+                        meeting_id,
+                        host_id,
+                        {"type": "waiting-peer-left", "peer_id": peer_id}
+                    ))
+                return peer_id
+
             if meeting_id in self.rooms and peer_id in self.rooms[meeting_id]:
                 del self.rooms[meeting_id][peer_id]
                 logger.info(f"Peer {peer_id} left room {meeting_id}")

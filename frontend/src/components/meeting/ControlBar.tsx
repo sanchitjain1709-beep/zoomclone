@@ -25,6 +25,7 @@ interface ControlBarProps {
   isVideoOff: boolean;
   isScreenSharing: boolean;
   participantCount: number;
+  waitingCount?: number;
   unreadCount?: number;
   isHost: boolean;
   audioInputs?: MediaDeviceInfo[];
@@ -51,6 +52,7 @@ export default function ControlBar({
   isVideoOff,
   isScreenSharing,
   participantCount,
+  waitingCount = 0,
   unreadCount = 0,
   isHost,
   audioInputs = [],
@@ -311,9 +313,15 @@ export default function ControlBar({
         >
           <div className="relative">
             <Users size={20} />
-            <span className="absolute -top-1.5 -right-3 bg-gray-700 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full border border-black">
-              {participantCount}
-            </span>
+            {waitingCount > 0 ? (
+              <span className="absolute -top-1.5 -right-4 bg-amber-500 text-black text-[10px] font-bold px-1.5 py-0.2 rounded-full border border-black animate-pulse shadow-md">
+                {participantCount}+{waitingCount}
+              </span>
+            ) : (
+              <span className="absolute -top-1.5 -right-3 bg-gray-700 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full border border-black">
+                {participantCount}
+              </span>
+            )}
           </div>
           <span className="text-[11px] font-medium mt-1">Participants</span>
         </button>

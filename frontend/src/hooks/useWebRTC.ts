@@ -8,7 +8,26 @@ const RTC_CONFIG: RTCConfiguration = {
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
     { urls: 'stun:stun2.l.google.com:19302' },
+    { urls: 'stun:stun3.l.google.com:19302' },
+    { urls: 'stun:stun4.l.google.com:19302' },
+    { urls: 'stun:global.stun.twilio.com:3478' },
+    {
+      urls: 'turn:openrelay.metered.ca:80',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
   ],
+  iceCandidatePoolSize: 10,
 };
 
 interface UseWebRTCOptions {
@@ -37,10 +56,16 @@ export function useWebRTC({
   // Map of remote participants: peer_id -> MeetingParticipant
   const [participants, setParticipants] = useState<Map<string, MeetingParticipant>>(new Map());
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [reactionList, setReactionList] = useState<Array<{ id: string; emoji: string; peerId: string }>>([]);
   const [activeSpeakerId, setActiveSpeakerId] = useState<string | null>(null);
   const [localVolume, setLocalVolume] = useState(0);
-  const [reactionList, setReactionList] = useState<Array<{ id: string; emoji: string; peerId: string }>>([]);
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'reconnecting' | 'disconnected'>('connecting');
+  
+  // Waiting Room State
+  const [isWaitingInRoom, setIsWaitingInRoom] = useState(false);
+  const [waitingParticipants, setWaitingParticipants] = useState<Array<{ peer_id: string; name: string }>>([]);
+  const [isDenied, setIsDenied] = useState(false);
+  const [deniedReason, setDeniedReason] = useState<string>('');
 
   const wsRef = useRef<WebSocket | null>(null);
   const peerConnectionsRef = useRef<Map<string, RTCPeerConnection>>(new Map());
@@ -288,7 +313,11 @@ export function useWebRTC({
 
           // A. Room Joined confirmation
           if (msg.type === 'room-joined') {
+            setIsWaitingInRoom(false);
             if (msg.role) setRole(msg.role as any);
+            if (msg.waiting_peers) {
+              setWaitingParticipants(msg.waiting_peers);
+            }
             if (msg.peers) {
               const initialMap = new Map<string, MeetingParticipant>();
               msg.peers.forEach((p) => {
@@ -303,6 +332,52 @@ export function useWebRTC({
                 createPeerConnection(p.peer_id, true);
               });
               setParticipants(initialMap);
+            }
+          }
+
+          // A.1 Waiting Room Handlers
+          else if (msg.type === 'waiting-room-status') {
+            setIsWaitingInRoom(true);
+          } else if (msg.type === 'waiting-room-admitted') {
+            setIsWaitingInRoom(false);
+            setRole('PARTICIPANT');
+            if (msg.peers) {
+              const initialMap = new Map<string, MeetingParticipant>();
+              msg.peers.forEach((p) => {
+                initialMap.set(p.peer_id, {
+                  peer_id: p.peer_id,
+                  name: p.name,
+                  role: p.role,
+                  is_muted: p.is_muted,
+                  is_video_off: p.is_video_off,
+                  is_screen_sharing: p.is_screen_sharing,
+                });
+                createPeerConnection(p.peer_id, true);
+              });
+              setParticipants(initialMap);
+            }
+          } else if (msg.type === 'waiting-room-denied') {
+            setIsWaitingInRoom(false);
+            setIsDenied(true);
+            setDeniedReason(msg.message || 'The host has denied your request to join this meeting.');
+          } else if (msg.type === 'waiting-room-list') {
+            if (msg.peers) {
+              setWaitingParticipants(msg.peers as any);
+            }
+          } else if (msg.type === 'waiting-peer-joined') {
+            if (msg.peer_id && msg.name) {
+              setWaitingParticipants((prev) => {
+                if (prev.some((p) => p.peer_id === msg.peer_id)) return prev;
+                return [...prev, { peer_id: msg.peer_id!, name: msg.name! }];
+              });
+            }
+          } else if (
+            msg.type === 'waiting-peer-admitted' ||
+            msg.type === 'waiting-peer-denied' ||
+            msg.type === 'waiting-peer-left'
+          ) {
+            if (msg.peer_id) {
+              setWaitingParticipants((prev) => prev.filter((p) => p.peer_id !== msg.peer_id));
             }
           }
 
@@ -758,6 +833,42 @@ export function useWebRTC({
     [role]
   );
 
+  // 12. Waiting Room Host Actions
+  const admitParticipant = useCallback((targetPeerId: string) => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(
+        JSON.stringify({
+          type: 'host-action',
+          action: 'admit_peer',
+          target_peer_id: targetPeerId,
+        })
+      );
+    }
+  }, []);
+
+  const denyParticipant = useCallback((targetPeerId: string) => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(
+        JSON.stringify({
+          type: 'host-action',
+          action: 'deny_peer',
+          target_peer_id: targetPeerId,
+        })
+      );
+    }
+  }, []);
+
+  const admitAllParticipants = useCallback(() => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(
+        JSON.stringify({
+          type: 'host-action',
+          action: 'admit_all',
+        })
+      );
+    }
+  }, []);
+
   return {
     peerId,
     role,
@@ -771,6 +882,10 @@ export function useWebRTC({
     activeSpeakerId,
     localVolume,
     connectionStatus,
+    isWaitingInRoom,
+    waitingParticipants,
+    isDenied,
+    deniedReason,
     toggleAudio,
     toggleVideo,
     toggleScreenShare,
@@ -780,5 +895,8 @@ export function useWebRTC({
     sendReaction,
     muteAllParticipants,
     kickParticipant,
+    admitParticipant,
+    denyParticipant,
+    admitAllParticipants,
   };
 }

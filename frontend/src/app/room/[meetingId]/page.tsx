@@ -5,10 +5,8 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
   Info,
   ShieldCheck,
-  Grid,
   Maximize,
   Minimize,
-  X,
 } from 'lucide-react';
 import { validateMeetingCode } from '@/services/api';
 import { Meeting } from '@/types/meeting';
@@ -21,6 +19,7 @@ import ParticipantsDrawer from '@/components/meeting/ParticipantsDrawer';
 import ChatDrawer from '@/components/meeting/ChatDrawer';
 import EndModal from '@/components/meeting/EndModal';
 import MeetingInfoPopup from '@/components/meeting/MeetingInfoPopup';
+import WaitingRoom from '@/components/meeting/WaitingRoom';
 
 export default function MeetingRoomPage() {
   const params = useParams();
@@ -64,7 +63,12 @@ export default function MeetingRoomPage() {
     chatMessages,
     reactionList,
     activeSpeakerId,
+    localVolume,
     connectionStatus,
+    isWaitingInRoom,
+    waitingParticipants,
+    isDenied,
+    deniedReason,
     toggleAudio,
     toggleVideo,
     toggleScreenShare,
@@ -74,6 +78,9 @@ export default function MeetingRoomPage() {
     sendReaction,
     muteAllParticipants,
     kickParticipant,
+    admitParticipant,
+    denyParticipant,
+    admitAllParticipants,
   } = useWebRTC({
     meetingId,
     displayName,
@@ -146,6 +153,26 @@ export default function MeetingRoomPage() {
     return 'grid-cols-2 sm:grid-cols-3 max-w-7xl';
   };
 
+  // If in waiting room or denied access, render Zoom Waiting Room
+  if (isWaitingInRoom || isDenied) {
+    return (
+      <WaitingRoom
+        meetingTitle={meeting?.title || `${displayName}'s Zoom Meeting`}
+        meetingCode={meeting?.meeting_code || meetingId}
+        hostName={meeting?.host_display_name || 'Meeting Host'}
+        displayName={displayName}
+        isDenied={isDenied}
+        deniedReason={deniedReason}
+        localStream={localStream}
+        isMuted={isMuted}
+        isVideoOff={isVideoOff}
+        localVolume={localVolume}
+        onToggleAudio={toggleAudio}
+        onToggleVideo={toggleVideo}
+      />
+    );
+  }
+
   return (
     <div className="h-screen w-screen bg-[#131619] text-white flex flex-col justify-between overflow-hidden relative select-none font-sans">
       {/* Connection State Alert Banner */}
@@ -159,6 +186,35 @@ export default function MeetingRoomPage() {
               ? 'Connecting to meeting room...'
               : 'Disconnected from meeting server. Re-establishing connection...'}
           </span>
+        </div>
+      )}
+
+      {/* Host Floating Waiting Room Notification Banner */}
+      {isHost && waitingParticipants.length > 0 && (
+        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-50 bg-[#1E222B]/95 backdrop-blur-md border border-amber-500/40 rounded-xl px-4 py-2.5 shadow-2xl flex items-center gap-3 animate-in slide-in-from-top duration-300">
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
+          <span className="text-xs text-gray-200">
+            <strong className="text-white font-semibold">
+              {waitingParticipants.length === 1
+                ? `${waitingParticipants[0].name} is waiting`
+                : `${waitingParticipants.length} people are waiting`}
+            </strong>{' '}
+            to join the meeting.
+          </span>
+          <div className="flex items-center gap-1.5 ml-2">
+            <button
+              onClick={admitAllParticipants}
+              className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer shadow-sm"
+            >
+              Admit All
+            </button>
+            <button
+              onClick={() => setActiveDrawer('participants')}
+              className="px-2.5 py-1 bg-white/10 hover:bg-white/15 text-gray-200 text-xs font-medium rounded-lg transition-colors cursor-pointer"
+            >
+              View
+            </button>
+          </div>
         </div>
       )}
 
@@ -253,8 +309,12 @@ export default function MeetingRoomPage() {
           isLocalMuted={isMuted}
           isLocalVideoOff={isVideoOff}
           participants={participants}
+          waitingParticipants={waitingParticipants}
           onMuteAll={muteAllParticipants}
           onKickParticipant={kickParticipant}
+          onAdmitPeer={admitParticipant}
+          onDenyPeer={denyParticipant}
+          onAdmitAll={admitAllParticipants}
           onOpenInvite={() => setShowInfoPopup(true)}
         />
 
@@ -273,6 +333,7 @@ export default function MeetingRoomPage() {
         isVideoOff={isVideoOff}
         isScreenSharing={isScreenSharing}
         participantCount={totalCount}
+        waitingCount={waitingParticipants.length}
         unreadCount={0}
         isHost={isHost}
         audioInputs={audioInputs}
