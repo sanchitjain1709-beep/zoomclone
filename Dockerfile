@@ -20,8 +20,9 @@ RUN chmod +x /usr/local/bin/uvicorn
 # Copy backend source code into container
 COPY backend/ .
 
-# Expose default port
+# Expose ports
 EXPOSE 8000
+EXPOSE 8080
 
 # Start FastAPI backend
 CMD ["python", "run.py"]

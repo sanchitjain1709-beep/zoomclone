@@ -20,8 +20,9 @@ RUN chmod +x /usr/local/bin/uvicorn
 # Copy application source
 COPY . .
 
-# Expose default port
+# Expose ports
 EXPOSE 8000
+EXPOSE 8080
 
 # Start command using python run.py entrypoint
 CMD ["python", "run.py"]
