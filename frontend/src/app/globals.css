@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --zoom-blue: #0E71EB;
+    --zoom-blue-hover: #005CE6;
+    --zoom-blue-active: #0048B3;
+    --zoom-orange: #FF5500;
+    --zoom-green: #22C55E;
+    --zoom-red: #E02828;
+    --zoom-red-hover: #C52222;
+    --zoom-navy: #00053D;
+    --zoom-stage-dark: #131619;
+    --zoom-toolbar-dark: #0E1012;
+    --zoom-card-dark: #1F2228;
+    --zoom-text-dark: #131619;
+    --zoom-text-muted: #6B7280;
+    --zoom-border: #E5E7EB;
+    --zoom-avatar-brown: #5C3E31;
+  }
+
+  body {
+    background-color: #F8F9FA;
+    color: #131619;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.4);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+/* Active Speaker Neon Border */
+.active-speaker-ring {
+  box-shadow: 0 0 0 2.5px #0E71EB, 0 0 14px rgba(14, 113, 235, 0.75);
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+/* Zoom Action Squircles */
+.zoom-squircle {
+  border-radius: 22px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+.zoom-squircle:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+.zoom-squircle:active {
+  transform: translateY(0);
+}
+
+/* Floating Reactions Animation */
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-80px) scale(1.3);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-160px) scale(1);
+  }
+}
+
+.reaction-bubble {
+  animation: floatUp 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Glassmorphic Elements */
+.glass-panel {
+  background: rgba(22, 24, 29, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}

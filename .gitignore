@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+backend/venv/
+venv/
+.env
+.env.local
+.env.*.local
+
+# Next.js Build Artifacts
+frontend/.next/
+.next/
+out/
+build/
+dist/
+
+# Python / Pytest
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.egg-info/
+.coverage
+
+# SQLite Database (Auto-seeded on boot)
+backend/zoom_clone.db
+backend/zoom_clone.db-wal
+backend/zoom_clone.db-shm
+*.sqlite
+*.sqlite3
+
+# Logs & Temporary Files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
