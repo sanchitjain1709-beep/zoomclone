@@ -34,10 +34,24 @@ export default function AudioVideoTestModal({ isOpen, onClose }: AudioVideoTestM
 
     async function initMedia() {
       try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: 640, height: 360 },
-          audio: true,
-        });
+        let mediaStream: MediaStream | null = null;
+        try {
+          mediaStream = await navigator.mediaDevices.getUserMedia({
+            video: { width: 640, height: 360 },
+            audio: true,
+          });
+        } catch {
+          try {
+            mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          } catch {
+            try {
+              mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            } catch {
+              // Neither camera nor microphone accessible
+            }
+          }
+        }
+        if (!mediaStream) return;
         activeStream = mediaStream;
         setStream(mediaStream);
 
