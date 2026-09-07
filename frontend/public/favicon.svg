@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="zoomclone_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B5CFF"/>
+      <stop offset="100%" stop-color="#005CE6"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="url(#zoomclone_grad)"/>
+  <path d="M7 11C7 9.89543 7.89543 9 9 9H17C18.1046 9 19 9.89543 19 11V21C19 22.1046 18.1046 23 17 23H9C7.89543 23 7 22.1046 7 21V11Z" fill="white"/>
+  <path d="M20 13.5L25 10V22L20 18.5V13.5Z" fill="white"/>
+</svg>

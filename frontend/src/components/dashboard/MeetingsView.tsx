@@ -36,9 +36,9 @@ export default function MeetingsView({
   const handleCopyInvite = (meeting: Meeting) => {
     const cleanCode = meeting.meeting_code.replace(/\s+/g, '');
     const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
-    const inviteText = `Sanchit Jain is inviting you to a scheduled Zoom meeting.\n\nTopic: ${meeting.title}\nTime: ${
+    const inviteText = `Sanchit Jain is inviting you to a scheduled ZoomClone meeting.\n\nTopic: ${meeting.title}\nTime: ${
       meeting.scheduled_start ? new Date(meeting.scheduled_start).toLocaleString() : 'Now'
-    }\n\nJoin Zoom Meeting:\n${origin}/lobby/${cleanCode}\n\nMeeting ID: ${meeting.meeting_code}\nPasscode: ${
+    }\n\nJoin ZoomClone Meeting:\n${origin}/lobby/${cleanCode}\n\nMeeting ID: ${meeting.meeting_code}\nPasscode: ${
       meeting.passcode || 'None'
     }`;
 
@@ -108,7 +108,7 @@ export default function MeetingsView({
           {upcoming.length === 0 ? (
             /* Pristine Zoom Empty State matching Screenshot 165356.png */
             <div className="bg-white rounded-xl p-12 text-center border border-gray-200 shadow-xs space-y-4">
-              <h2 className="text-2xl font-bold text-gray-900">Welcome to Zoom Meetings!</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Welcome to ZoomClone Meetings!</h2>
               <p className="text-sm text-gray-600 max-w-xl mx-auto leading-relaxed">
                 Schedule new and manage existing meetings all in one place. You are currently limited to
                 40 minutes per meeting.{' '}

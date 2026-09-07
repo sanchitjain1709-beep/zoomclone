@@ -34,7 +34,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = 'Home - Zoom Workplace';
+    document.title = 'Home - ZoomClone Workplace';
   }, []);
 
   const loadData = async () => {
@@ -62,7 +62,7 @@ export default function HomePage() {
   const handleStartInstant = async () => {
     try {
       const meeting = await createInstantMeeting({
-        title: `${user?.display_name || 'Sanchit Jain'}'s Zoom Meeting`,
+        title: `${user?.display_name || 'Sanchit Jain'}'s ZoomClone Meeting`,
         use_pmi: false,
       });
       const cleanCode = meeting.meeting_code.replace(/\s+/g, '');

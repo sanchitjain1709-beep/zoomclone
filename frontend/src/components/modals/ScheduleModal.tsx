@@ -82,7 +82,7 @@ export default function ScheduleModal({
         {/* Heading matching Screenshot 170302.png */}
         <div className="border-b border-gray-100 pb-4 mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Schedule Meeting</h2>
-          <p className="text-xs text-gray-500 mt-1">Configure your Zoom meeting session parameters</p>
+          <p className="text-xs text-gray-500 mt-1">Configure your ZoomClone meeting session parameters</p>
         </div>
 
         {error && (
@@ -176,7 +176,7 @@ export default function ScheduleModal({
             <span className="text-amber-600 font-bold">⚠️</span>
             <span>
               You can schedule meetings for up to 40 minutes each with your current Basic plan. Need more time?{' '}
-              <span className="text-[#0E71EB] hover:underline cursor-pointer font-medium">Upgrade to Zoom Workplace Pro</span>
+              <span className="text-[#0E71EB] hover:underline cursor-pointer font-medium">Upgrade to ZoomClone Workplace Pro</span>
             </span>
           </div>
 

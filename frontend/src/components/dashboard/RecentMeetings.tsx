@@ -87,7 +87,7 @@ export default function RecentMeetings({ meetings }: RecentMeetingsProps) {
 
       {/* Symmetrical footer padding to align with UpcomingMeetings */}
       <div className="pt-2 border-t border-gray-50 text-[11px] text-gray-400 text-center">
-        Synchronized with Zoom Engine
+        Synchronized with ZoomClone Engine
       </div>
     </div>
   );

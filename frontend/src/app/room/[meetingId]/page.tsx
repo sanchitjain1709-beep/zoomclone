@@ -157,7 +157,7 @@ export default function MeetingRoomPage() {
   if (isWaitingInRoom || isDenied) {
     return (
       <WaitingRoom
-        meetingTitle={meeting?.title || `${displayName}'s Zoom Meeting`}
+        meetingTitle={meeting?.title || `${displayName}'s ZoomClone Meeting`}
         meetingCode={meeting?.meeting_code || meetingId}
         hostName={meeting?.host_display_name || 'Meeting Host'}
         displayName={displayName}
@@ -227,14 +227,14 @@ export default function MeetingRoomPage() {
             className="flex items-center space-x-1.5 text-xs font-semibold text-gray-200 hover:text-white bg-white/10 hover:bg-white/15 px-3 py-1.5 rounded-lg backdrop-blur-md transition-colors cursor-pointer"
           >
             <Info size={14} className="text-[#0E71EB]" />
-            <span>{meeting?.title || `${displayName}'s Zoom Meeting`}</span>
+            <span>{meeting?.title || `${displayName}'s ZoomClone Meeting`}</span>
           </button>
 
           {/* Meeting Info Popup Dialog */}
           <MeetingInfoPopup
             isOpen={showInfoPopup}
             onClose={() => setShowInfoPopup(false)}
-            title={meeting?.title || `${displayName}'s Zoom Meeting`}
+            title={meeting?.title || `${displayName}'s ZoomClone Meeting`}
             meetingCode={meeting?.meeting_code || meetingId}
             hostName={meeting?.host_display_name || displayName}
             passcode={meeting?.passcode || 'gTfEu4'}

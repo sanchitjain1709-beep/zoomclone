@@ -36,7 +36,7 @@ export default function MeetingInfoPopup({
   };
 
   const handleCopyFullInvitation = () => {
-    const inviteText = `${hostName} is inviting you to a Zoom meeting.\n\nTopic: ${title}\nJoin Zoom Meeting:\n${inviteLink}\n\nMeeting ID: ${meetingCode}\nPasscode: ${passcode}`;
+    const inviteText = `${hostName} is inviting you to a ZoomClone meeting.\n\nTopic: ${title}\nJoin ZoomClone Meeting:\n${inviteLink}\n\nMeeting ID: ${meetingCode}\nPasscode: ${passcode}`;
     navigator.clipboard.writeText(inviteText);
     setCopiedInvite(true);
     setTimeout(() => setCopiedInvite(false), 2000);

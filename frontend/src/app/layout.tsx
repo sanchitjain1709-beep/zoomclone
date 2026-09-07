@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Zoom Workplace — Video Conferencing & Team Collaboration",
-  description: "Functional Zoom Web Application Clone with WebRTC video conferencing, scheduling, and instant meetings.",
+  title: "ZoomClone Workplace — Video Conferencing & Team Collaboration",
+  description: "Functional ZoomClone Web Application with WebRTC video conferencing, scheduling, and instant meetings.",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icon.svg",
   },
 };
 

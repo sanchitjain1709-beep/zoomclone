@@ -20,7 +20,7 @@ interface WaitingRoomProps {
 }
 
 export default function WaitingRoom({
-  meetingTitle = 'Zoom Meeting',
+  meetingTitle = 'ZoomClone Meeting',
   meetingCode = '',
   hostName = 'Host',
   displayName,

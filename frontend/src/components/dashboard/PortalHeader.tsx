@@ -23,14 +23,19 @@ export default function PortalHeader({
   return (
     <header className="w-full bg-white border-b border-gray-200 sticky top-0 z-30 shadow-2xs">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        {/* Left: Zoom Workplace Branding */}
-        <Link href="/" className="flex items-center space-x-2 group">
-          <span className="text-2xl font-extrabold tracking-tight text-[#0B5CFF]">
-            zoom
-          </span>
-          <span className="text-sm font-semibold text-gray-700 tracking-tight">
-            Workplace
-          </span>
+        {/* Left: ZoomClone Workplace Branding */}
+        <Link href="/" className="flex items-center space-x-2.5 group">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#0B5CFF] to-[#3B82F6] flex items-center justify-center text-white shadow-sm shadow-blue-500/25 group-hover:scale-105 transition-transform">
+            <Video size={17} className="fill-white" />
+          </div>
+          <div className="flex items-baseline space-x-1.5">
+            <span className="text-2xl font-black tracking-tight text-[#0B5CFF]">
+              zoom<span className="text-[#005CE6] font-black">clone</span>
+            </span>
+            <span className="text-xs font-semibold text-gray-500 tracking-tight">
+              Workplace
+            </span>
+          </div>
         </Link>
 
         {/* Right: Functional Action Buttons & Profile Avatar */}

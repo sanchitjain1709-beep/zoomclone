@@ -30,9 +30,9 @@ export default function UpcomingMeetings({
   const handleCopyInvite = (meeting: Meeting) => {
     const cleanCode = meeting.meeting_code.replace(/\s+/g, '');
     const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
-    const inviteText = `Sanchit Jain is inviting you to a scheduled Zoom meeting.\n\nTopic: ${meeting.title}\nTime: ${
+    const inviteText = `Sanchit Jain is inviting you to a scheduled ZoomClone meeting.\n\nTopic: ${meeting.title}\nTime: ${
       meeting.scheduled_start ? new Date(meeting.scheduled_start).toLocaleString() : 'Now'
-    }\n\nJoin Zoom Meeting:\n${origin}/lobby/${cleanCode}\n\nMeeting ID: ${meeting.meeting_code}\nPasscode: ${
+    }\n\nJoin ZoomClone Meeting:\n${origin}/lobby/${cleanCode}\n\nMeeting ID: ${meeting.meeting_code}\nPasscode: ${
       meeting.passcode || 'None'
     }`;
 

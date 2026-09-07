@@ -38,7 +38,7 @@ export default function ProfileCard({ user }: ProfileCardProps) {
           </div>
           <p className="text-xs text-gray-500 mt-1 flex items-center space-x-1 truncate">
             <Mail size={12} className="text-gray-400 shrink-0" />
-            <span>{user?.email || 'sanchit.jain@zoom.clone'}</span>
+            <span>{user?.email || 'sanchit.jain@zoomclone.app'}</span>
           </p>
         </div>
       </div>

@@ -177,7 +177,7 @@ export default function MeetingLobbyPage() {
     return (
       <div className="min-h-screen bg-[#131619] flex flex-col items-center justify-center text-white space-y-4">
         <Loader2 size={36} className="animate-spin text-[#0E71EB]" />
-        <p className="text-sm font-medium text-gray-400">Verifying Zoom Meeting...</p>
+        <p className="text-sm font-medium text-gray-400">Verifying ZoomClone Meeting...</p>
       </div>
     );
   }
@@ -207,11 +207,18 @@ export default function MeetingLobbyPage() {
     <div className="min-h-screen bg-[#131619] flex flex-col justify-between text-white font-sans">
       {/* Top Navbar */}
       <header className="h-16 px-6 flex items-center justify-between border-b border-gray-800/80 bg-[#16181D]">
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="text-2xl font-black text-[#0B5CFF]">zoom</span>
-          <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest pl-2 border-l border-gray-700">
-            Workplace Lobby
-          </span>
+        <Link href="/" className="flex items-center space-x-2.5">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#0B5CFF] to-[#3B82F6] flex items-center justify-center text-white shadow-sm shadow-blue-500/25">
+            <VideoIcon size={17} className="fill-white" />
+          </div>
+          <div className="flex items-baseline space-x-1.5">
+            <span className="text-2xl font-black text-[#0B5CFF]">
+              zoom<span className="text-[#38BDF8] font-black">clone</span>
+            </span>
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest pl-2 border-l border-gray-700">
+              Lobby
+            </span>
+          </div>
         </Link>
         <div className="flex items-center space-x-2 text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-full border border-green-800/40">
           <ShieldCheck size={14} />
