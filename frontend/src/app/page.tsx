@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { MessageSquare, RefreshCw } from 'lucide-react';
 import { User, Meeting } from '@/types/meeting';
 import {
   getCurrentUser,
@@ -18,10 +17,12 @@ import ActionTiles from '@/components/dashboard/ActionTiles';
 import ClockHero from '@/components/dashboard/ClockHero';
 import UpcomingMeetings from '@/components/dashboard/UpcomingMeetings';
 import RecentMeetings from '@/components/dashboard/RecentMeetings';
+import MeetingsView from '@/components/dashboard/MeetingsView';
 import JoinModal from '@/components/modals/JoinModal';
 import ScheduleModal from '@/components/modals/ScheduleModal';
+import AudioVideoTestModal from '@/components/modals/AudioVideoTestModal';
 
-export default function DashboardPage() {
+export default function HomePage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [upcoming, setUpcoming] = useState<Meeting[]>([]);
@@ -29,7 +30,12 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'home' | 'meetings' | 'recordings'>('home');
   const [isJoinOpen, setIsJoinOpen] = useState(false);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [isTestModalOpen, setIsTestModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    document.title = 'Home - Zoom Workplace';
+  }, []);
 
   const loadData = async () => {
     try {
@@ -43,7 +49,7 @@ export default function DashboardPage() {
       setUpcoming(up);
       setRecent(rec);
     } catch (e) {
-      console.error('Error loading dashboard data', e);
+      console.error('Error loading home data', e);
     } finally {
       setLoading(false);
     }
@@ -69,7 +75,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col font-sans">
-      {/* 1. Zoom Portal Header */}
+      {/* 1. Zoom Portal Top Header (All Mocked Buttons Removed) */}
       <PortalHeader
         user={user}
         onOpenJoin={() => setIsJoinOpen(true)}
@@ -79,50 +85,69 @@ export default function DashboardPage() {
 
       {/* 2. Main Workspace Layout */}
       <div className="flex-1 flex max-w-7xl w-full mx-auto">
-        {/* Left Sidebar */}
-        <Sidebar activeTab={activeTab} onSelectTab={(t) => setActiveTab(t)} />
+        {/* Left Navigation Sidebar */}
+        <Sidebar
+          activeTab={activeTab}
+          onSelectTab={(t) => setActiveTab(t)}
+          onOpenTestModal={() => setIsTestModalOpen(true)}
+        />
 
-        {/* Center Main Dashboard Canvas */}
-        <main className="flex-1 p-6 md:p-8 space-y-6 overflow-y-auto">
-          {/* Top Clock & Date Hero Banner */}
-          <ClockHero />
+        {/* Main Canvas with Symmetrical Proportions */}
+        <main className="flex-1 p-6 md:p-8 overflow-y-auto flex flex-col items-center">
+          {activeTab === 'home' && (
+            <div className="max-w-5xl w-full space-y-6 animate-in fade-in duration-150">
+              {/* Symmetrical Time & Date Header */}
+              <ClockHero />
 
-          {/* Dual Column Layout matching Screenshot 165109.png & 170818.png */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left 2 Columns: Profile & Upcoming Meetings */}
-            <div className="lg:col-span-2 space-y-6">
-              <ProfileCard user={user} />
-              <UpcomingMeetings
-                meetings={upcoming}
+              {/* Symmetrical 2x2 Grid Layout */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+                {/* Row 1: Profile (Left) & Quick Action Tiles (Right) */}
+                <ProfileCard user={user} />
+                <ActionTiles
+                  onOpenSchedule={() => setIsScheduleOpen(true)}
+                  onOpenJoin={() => setIsJoinOpen(true)}
+                  onStartHost={handleStartInstant}
+                />
+
+                {/* Row 2: Recent Activity (Left) & Upcoming Meetings (Right) */}
+                <RecentMeetings meetings={recent} />
+                <UpcomingMeetings
+                  meetings={upcoming}
+                  onRefresh={loadData}
+                  onOpenSchedule={() => setIsScheduleOpen(true)}
+                  onTestAudioVideo={() => setIsTestModalOpen(true)}
+                />
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'meetings' && (
+            <div className="max-w-5xl w-full animate-in fade-in duration-150">
+              <MeetingsView
+                user={user}
+                upcoming={upcoming}
+                recent={recent}
                 onRefresh={loadData}
                 onOpenSchedule={() => setIsScheduleOpen(true)}
+                onStartInstant={handleStartInstant}
               />
             </div>
+          )}
 
-            {/* Right 1 Column: Action Tiles & Recent History */}
-            <div className="space-y-6">
-              <ActionTiles
-                user={user}
-                onOpenSchedule={() => setIsScheduleOpen(true)}
-                onOpenJoin={() => setIsJoinOpen(true)}
-                onStartHost={handleStartInstant}
-              />
-              <RecentMeetings meetings={recent} />
+          {activeTab === 'recordings' && (
+            <div className="max-w-5xl w-full animate-in fade-in duration-150">
+              <div className="bg-white rounded-2xl p-12 text-center border border-gray-200/80 shadow-xs space-y-3">
+                <h2 className="text-xl font-bold text-gray-900">Cloud Recordings</h2>
+                <p className="text-sm text-gray-500 max-w-md mx-auto">
+                  There are no cloud recordings stored in your account. Recorded meetings will automatically appear here once finalized.
+                </p>
+              </div>
             </div>
-          </div>
+          )}
         </main>
       </div>
 
-      {/* 3. Floating Action Bubble for Chat/Support matching screenshot */}
-      <button
-        onClick={() => alert('Zoom Help Center: Live support assistant is available 24/7.')}
-        className="fixed bottom-6 right-6 w-13 h-13 rounded-full bg-[#0E71EB] hover:bg-[#005CE6] text-white shadow-xl flex items-center justify-center transition-all hover:scale-105 z-40 cursor-pointer"
-        title="Zoom Support"
-      >
-        <MessageSquare size={22} />
-      </button>
-
-      {/* 4. Modals */}
+      {/* 3. Fully Functional Modals */}
       <JoinModal
         isOpen={isJoinOpen}
         onClose={() => setIsJoinOpen(false)}
@@ -137,6 +162,11 @@ export default function DashboardPage() {
           setIsScheduleOpen(false);
         }}
         pmi={user?.pmi}
+      />
+
+      <AudioVideoTestModal
+        isOpen={isTestModalOpen}
+        onClose={() => setIsTestModalOpen(false)}
       />
     </div>
   );

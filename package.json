@@ -1,0 +1,14 @@
+{
+  "name": "zoom-clone",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fullstack Zoom Web Application Clone (Scaler SDE Assignment)",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix frontend start",
+    "lint": "npm --prefix frontend run lint",
+    "backend": "cd backend && .\\venv\\Scripts\\python -m uvicorn app.main:app --host 0.0.0.0 --port 8000",
+    "test:backend": "cd backend && .\\venv\\Scripts\\python -m pytest"
+  }
+}
