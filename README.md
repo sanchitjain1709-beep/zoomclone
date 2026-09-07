@@ -137,3 +137,40 @@ npm run dev
 | **Bonus: Screen Sharing** | ✅ Implemented | Native WebRTC screen sharing with live track replacement. |
 | **Database Design** | ✅ Implemented | Normalized SQLite schema in WAL mode with relationships and foreign keys. |
 | **No Login Required** | ✅ Implemented | Default evaluator user pre-seeded on startup for zero-friction evaluation. |
+
+---
+
+## 🚀 Cloud Deployment Guide
+
+The codebase is pre-configured with `render.yaml`, `backend/Procfile`, and `backend/Dockerfile` for instant cloud deployment:
+
+### 1. Deploy Backend (Render.com / Railway)
+1. Log in to [Render Dashboard](https://dashboard.render.com).
+2. Click **New +** -> **Web Service** -> Connect this GitHub repository: `sanchitjain1709-beep/zoom-clone`.
+3. Configure settings:
+   * **Root Directory**: `backend`
+   * **Environment**: `Python 3`
+   * **Build Command**: `pip install -r requirements.txt`
+   * **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+4. Click **Create Web Service**.
+5. Note your deployed backend URL: `https://zoom-clone-backend-xxxx.onrender.com`.
+
+### 2. Deploy Frontend (Vercel)
+1. Log in to [Vercel](https://vercel.com/new).
+2. Import the repository: `sanchitjain1709-beep/zoom-clone`.
+3. Configure settings:
+   * **Framework Preset**: Next.js
+   * **Root Directory**: `frontend`
+4. In **Environment Variables**, add:
+   * `NEXT_PUBLIC_API_URL` = `https://your-backend.onrender.com/api`
+   * `NEXT_PUBLIC_WS_URL` = `wss://your-backend.onrender.com`
+5. Click **Deploy**!
+6. Your live deployed application link will be generated: `https://zoom-clone-xxxx.vercel.app`.
+
+---
+
+## 📦 Deliverables Summary for Submission
+* **Public GitHub Repository**: [https://github.com/sanchitjain1709-beep/zoom-clone](https://github.com/sanchitjain1709-beep/zoom-clone)
+* **Architecture & System Design**: [PRODUCT_ARCHITECTURE.md](file:///c:/Users/sanch/ZOOMclone/PRODUCT_ARCHITECTURE.md)
+* **Local Evaluator Identity**: **Sanchit Jain** (Personal Meeting ID: `948 007 6202`)
+
