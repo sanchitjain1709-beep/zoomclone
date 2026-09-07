@@ -11,6 +11,7 @@ interface UpcomingMeetingsProps {
   onRefresh: () => void;
   onOpenSchedule: () => void;
   onTestAudioVideo?: () => void;
+  onViewAllMeetings?: () => void;
 }
 
 export default function UpcomingMeetings({
@@ -18,6 +19,7 @@ export default function UpcomingMeetings({
   onRefresh,
   onOpenSchedule,
   onTestAudioVideo,
+  onViewAllMeetings,
 }: UpcomingMeetingsProps) {
   const router = useRouter();
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -50,18 +52,14 @@ export default function UpcomingMeetings({
 
   return (
     <div className="min-h-[340px] bg-white rounded-2xl p-6 shadow-xs border border-gray-200/80 flex flex-col justify-between transition-all">
-      {/* Header */}
+      {/* Header matching Screenshot 165109.png */}
       <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-        <div className="flex items-center space-x-2">
-          <Calendar size={17} className="text-gray-400" />
-          <h3 className="text-base font-bold text-gray-900">Upcoming Meetings</h3>
-        </div>
+        <h3 className="text-xl font-bold text-gray-900">Meetings</h3>
         <button
-          onClick={onOpenSchedule}
-          className="flex items-center space-x-1 text-xs font-semibold text-[#0E71EB] hover:text-[#005CE6] transition-colors cursor-pointer"
+          onClick={onViewAllMeetings || onOpenSchedule}
+          className="text-xs font-semibold text-[#0E71EB] hover:underline transition-colors cursor-pointer"
         >
-          <Plus size={13} />
-          <span>Schedule</span>
+          Visit Meetings
         </button>
       </div>
 

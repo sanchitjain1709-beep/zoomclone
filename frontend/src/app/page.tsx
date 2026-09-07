@@ -14,7 +14,6 @@ import PortalHeader from '@/components/dashboard/PortalHeader';
 import Sidebar from '@/components/dashboard/Sidebar';
 import ProfileCard from '@/components/dashboard/ProfileCard';
 import ActionTiles from '@/components/dashboard/ActionTiles';
-import ClockHero from '@/components/dashboard/ClockHero';
 import UpcomingMeetings from '@/components/dashboard/UpcomingMeetings';
 import RecentMeetings from '@/components/dashboard/RecentMeetings';
 import MeetingsView from '@/components/dashboard/MeetingsView';
@@ -95,27 +94,30 @@ export default function HomePage() {
         {/* Main Canvas with Symmetrical Proportions */}
         <main className="flex-1 p-6 md:p-8 overflow-y-auto flex flex-col items-center">
           {activeTab === 'home' && (
-            <div className="max-w-5xl w-full space-y-6 animate-in fade-in duration-150">
-              {/* Symmetrical Time & Date Header */}
-              <ClockHero />
-
-              {/* Symmetrical 2x2 Grid Layout */}
+            <div className="max-w-5xl w-full animate-in fade-in duration-150">
+              {/* 4-Tile Hero Grid matching Zoom Screenshot 165109.png */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-                {/* Row 1: Profile (Left) & Quick Action Tiles (Right) */}
+                {/* Tile 1 (Top Left): Profile Card */}
                 <ProfileCard user={user} />
+
+                {/* Tile 2 (Top Right): Quick Action Squircles + Personal Meeting ID */}
                 <ActionTiles
+                  user={user}
                   onOpenSchedule={() => setIsScheduleOpen(true)}
                   onOpenJoin={() => setIsJoinOpen(true)}
                   onStartHost={handleStartInstant}
                 />
 
-                {/* Row 2: Recent Activity (Left) & Upcoming Meetings (Right) */}
+                {/* Tile 3 (Bottom Left): Recent Activity */}
                 <RecentMeetings meetings={recent} />
+
+                {/* Tile 4 (Bottom Right): Meetings */}
                 <UpcomingMeetings
                   meetings={upcoming}
                   onRefresh={loadData}
                   onOpenSchedule={() => setIsScheduleOpen(true)}
                   onTestAudioVideo={() => setIsTestModalOpen(true)}
+                  onViewAllMeetings={() => setActiveTab('meetings')}
                 />
               </div>
             </div>

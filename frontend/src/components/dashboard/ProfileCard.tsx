@@ -1,74 +1,60 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Copy, Check, ShieldCheck, Mail } from 'lucide-react';
+import React from 'react';
 import { User } from '@/types/meeting';
 
 interface ProfileCardProps {
   user: User | null;
+  onManagePlan?: () => void;
+  onViewPlanDetails?: () => void;
 }
 
-export default function ProfileCard({ user }: ProfileCardProps) {
-  const [copied, setCopied] = useState(false);
-  const pmi = user?.pmi || '948 007 6202';
-
-  const handleCopyPMI = () => {
-    navigator.clipboard.writeText(pmi);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
+export default function ProfileCard({
+  user,
+  onManagePlan,
+  onViewPlanDetails,
+}: ProfileCardProps) {
   return (
-    <div className="h-[190px] bg-white rounded-2xl p-6 shadow-xs border border-gray-200/80 flex flex-col justify-between transition-all">
-      {/* Top: Avatar & User Info */}
-      <div className="flex items-center space-x-4">
-        {/* Bronze Avatar Circle */}
-        <div className="w-14 h-14 rounded-full bg-[#5C3E31] text-white flex items-center justify-center text-xl font-bold shadow-inner shrink-0 select-none">
+    <div className="min-h-[200px] bg-white rounded-2xl p-6 shadow-xs border border-gray-200/80 flex items-center justify-between transition-all select-none">
+      {/* Left: Avatar & User Info */}
+      <div className="flex items-center space-x-5">
+        {/* Bronze Avatar Circle matching Screenshot 165109.png */}
+        <div className="w-16 h-16 rounded-full bg-[#5C3E31] text-white flex items-center justify-center text-2xl font-bold shadow-sm shrink-0 select-none">
           {user?.avatar_initial || 'S'}
         </div>
-        <div className="min-w-0">
-          <div className="flex items-center space-x-2">
-            <h2 className="text-xl font-bold text-gray-900 truncate">
-              {user?.display_name || 'Sanchit Jain'}
-            </h2>
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-[#0B5CFF] border border-blue-100">
-              <ShieldCheck size={11} className="mr-1" />
+
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+            {user?.display_name || 'Sanchit Jain'}
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">
+            Plan:{' '}
+            <span className="font-semibold text-gray-800">
               {user?.plan || 'Workplace Basic'}
             </span>
-          </div>
-          <p className="text-xs text-gray-500 mt-1 flex items-center space-x-1 truncate">
-            <Mail size={12} className="text-gray-400 shrink-0" />
-            <span>{user?.email || 'sanchit.jain@zoomclone.app'}</span>
           </p>
         </div>
       </div>
 
-      {/* Bottom: Personal Meeting ID with Copy */}
-      <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
-        <div>
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block">
-            Personal Meeting ID (PMI)
-          </span>
-          <span className="text-base font-bold font-mono text-gray-800 tracking-wide">
-            {pmi}
-          </span>
-        </div>
+      {/* Right: Plan Action Controls matching Screenshot 165109.png */}
+      <div className="flex flex-col items-end space-y-2.5 shrink-0">
         <button
-          onClick={handleCopyPMI}
-          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer"
-          title="Copy PMI"
+          onClick={
+            onManagePlan ||
+            (() => alert('Workplace Basic Plan: 40-minute limit per meeting with up to 100 participants.'))
+          }
+          className="px-4 py-2 bg-blue-50/80 hover:bg-blue-100/90 text-[#0E71EB] rounded-xl text-xs font-semibold transition-all border border-blue-100 shadow-2xs cursor-pointer"
         >
-          {copied ? (
-            <>
-              <Check size={13} className="text-green-600" />
-              <span className="text-green-600">Copied</span>
-            </>
-          ) : (
-            <>
-              <Copy size={13} className="text-gray-500" />
-              <span>Copy PMI</span>
-            </>
-          )}
+          Manage Plan
+        </button>
+        <button
+          onClick={
+            onViewPlanDetails ||
+            (() => alert('Plan Details: Personal Meeting ID, WebRTC HD Conferencing, Unlimited 1-on-1 calls.'))
+          }
+          className="text-xs font-medium text-[#0E71EB] hover:underline cursor-pointer transition-colors"
+        >
+          View Plan Details
         </button>
       </div>
     </div>

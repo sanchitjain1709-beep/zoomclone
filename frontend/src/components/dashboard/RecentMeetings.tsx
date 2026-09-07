@@ -11,13 +11,10 @@ interface RecentMeetingsProps {
 export default function RecentMeetings({ meetings }: RecentMeetingsProps) {
   return (
     <div className="min-h-[340px] bg-white rounded-2xl p-6 shadow-xs border border-gray-200/80 flex flex-col justify-between transition-all">
-      {/* Header */}
+      {/* Header matching Screenshot 165109.png */}
       <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-        <div className="flex items-center space-x-2">
-          <History size={17} className="text-gray-400" />
-          <h3 className="text-base font-bold text-gray-900">Recent Activity</h3>
-        </div>
-        <span className="text-xs font-semibold text-gray-400">
+        <h3 className="text-xl font-bold text-gray-900">Recent activity</h3>
+        <span className="text-xs font-medium text-gray-400">
           {meetings.length} {meetings.length === 1 ? 'session' : 'sessions'}
         </span>
       </div>
