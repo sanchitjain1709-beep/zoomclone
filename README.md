@@ -146,7 +146,7 @@ The codebase is pre-configured with `render.yaml`, `backend/Procfile`, and `back
 
 ### 1. Deploy Backend (Render.com / Railway)
 1. Log in to [Render Dashboard](https://dashboard.render.com).
-2. Click **New +** -> **Web Service** -> Connect this GitHub repository: `sanchitjain1709-beep/zoom-clone`.
+2. Click **New +** -> **Web Service** -> Connect this GitHub repository: `sanchitjain1709-beep/zoomclone`.
 3. Configure settings:
    * **Root Directory**: `backend`
    * **Environment**: `Python 3`
@@ -157,7 +157,7 @@ The codebase is pre-configured with `render.yaml`, `backend/Procfile`, and `back
 
 ### 2. Deploy Frontend (Vercel)
 1. Log in to [Vercel](https://vercel.com/new).
-2. Import the repository: `sanchitjain1709-beep/zoom-clone`.
+2. Import the repository: `sanchitjain1709-beep/zoomclone`.
 3. Configure settings:
    * **Framework Preset**: Next.js
    * **Root Directory**: `frontend`
@@ -170,7 +170,7 @@ The codebase is pre-configured with `render.yaml`, `backend/Procfile`, and `back
 ---
 
 ## 📦 Deliverables Summary for Submission
-* **Public GitHub Repository**: [https://github.com/sanchitjain1709-beep/zoom-clone](https://github.com/sanchitjain1709-beep/zoom-clone)
+* **Public GitHub Repository**: [https://github.com/sanchitjain1709-beep/zoomclone](https://github.com/sanchitjain1709-beep/zoomclone)
 * **Architecture & System Design**: [PRODUCT_ARCHITECTURE.md](file:///c:/Users/sanch/ZOOMclone/PRODUCT_ARCHITECTURE.md)
 * **Local Evaluator Identity**: **Sanchit Jain** (Personal Meeting ID: `948 007 6202`)
 
